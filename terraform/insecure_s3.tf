@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "bad_bucket" {
 }
  
 resource "aws_security_group" "bad_sg" {
-
+ 
   ingress {
     from_port   = 22
     to_port     = 22
