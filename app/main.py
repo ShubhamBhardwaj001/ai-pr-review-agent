@@ -17,7 +17,7 @@ def main():
 
     pull_request = repo.get_pull(pr_number)
 
-    files = pull_request.get_files()
+    files = pull_request.get_files()    # all these calls we ar able to make with the help of import github.
 
     review_comments = []
 
