@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "bad_bucket" {
  
   acl = "public-read"
 }
-
+ 
 resource "aws_security_group" "bad_sg" {
 
   ingress {
