@@ -30,9 +30,21 @@ def review_code(file_content, file_name):
     Return concise bullet point findings.
     """
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
-    )
+    try:
 
-    return response.text
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+        return response.text
+
+    except Exception as error:
+
+        print(f"Gemini API failed: {error}")
+
+        return """
+- AI review unavailable
+- Gemini API quota exceeded or API failed
+- Please verify API quota/billing
+"""
