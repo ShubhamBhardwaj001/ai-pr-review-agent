@@ -1,12 +1,10 @@
-import google.generativeai as genai
+from google import genai
 import os
 
 
-genai.configure(
+client = genai.Client(
     api_key=os.environ["GEMINI_API_KEY"]
 )
-
-model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 def review_code(file_content, file_name):
@@ -32,6 +30,9 @@ def review_code(file_content, file_name):
     Return concise bullet point findings.
     """
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt
+    )
 
     return response.text
