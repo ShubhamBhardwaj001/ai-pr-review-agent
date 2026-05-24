@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "bad_bucket" {
-  bucket = "my-public-bucket1s"
+  bucket = "my-public-bucket1"
 
   acl = "public-read"
 }
