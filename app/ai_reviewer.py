@@ -16,22 +16,22 @@ def review_code(file_content, file_name):
     prompt = f"""
 You are a senior DevSecOps engineer.
 
-Review this file and find:
-- security issues
-- bad practices
-- misconfigurations
-- CI/CD issues
-
-File: {file_name}
+Review this file:
+{file_name}
 
 Content:
 {file_content}
+
+Find:
+- security issues
+- misconfigurations
+- bad practices
 
 Return bullet points only.
 """
 
     payload = {
-        "model": "llama-3.1-70b-versatile",
+        "model": "llama3-8b-8192",
         "messages": [
             {"role": "user", "content": prompt}
         ],
@@ -45,5 +45,11 @@ Return bullet points only.
     )
 
     result = response.json()
+
+    if "error" in result:
+        return f"Groq API Error: {result['error']['message']}"
+
+    if "choices" not in result:
+        return f"Unexpected response: {result}"
 
     return result["choices"][0]["message"]["content"]
