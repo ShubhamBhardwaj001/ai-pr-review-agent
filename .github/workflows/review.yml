@@ -1,19 +1,14 @@
 name: AI PR Review
-
 on:
   pull_request:
     types: [opened, synchronize]
-
 jobs:
   ai-review:
     runs-on: ubuntu-latest
-
     permissions:
       pull-requests: write
       contents: read
-
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -27,8 +22,29 @@ jobs:
 
       - name: Run AI PR Reviewer
         env:
-          GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python app/main.py
+
+      - name: Send RCA email on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "❌ AI PR Review failed — ${{ github.repository }} PR #${{ github.event.pull_request.number }}"
+          to: shubhambhardwaj2107@gmail.com
+          from: AI PR Review Bot
+          body: |
+            The AI PR Review workflow failed.
+
+            Repo: ${{ github.repository }}
+            PR: #${{ github.event.pull_request.number }}
+            Triggered by: ${{ github.actor }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Check the run link above for the full log / root cause.
