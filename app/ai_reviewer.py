@@ -3,7 +3,8 @@ import requests
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-def review_code(file_content, file_name):
+
+def review_code(file_content, file_name, max_retries=3):
     api_key = os.environ["GROQ_API_KEY"]
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -26,9 +27,10 @@ Respond ONLY with valid JSON, no markdown fences, in this exact shape:
     payload = {
         "model": "openai/gpt-oss-20b",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.1
+        "temperature": 0.1,
         "response_format": {"type": "json_object"},
     }
+
     response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
 
     if response.status_code != 200:
