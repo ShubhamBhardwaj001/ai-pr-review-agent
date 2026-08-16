@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "data" {
+resource "aws_s3_bucket" "dataa" {
   bucket = "company-analytics-data"
 }
 
