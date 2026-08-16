@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 
 metadata:
-  name: insecure-pods
+  name: insecure-podss
 
 spec:
   containers:
