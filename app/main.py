@@ -7,6 +7,14 @@ from ai_reviewer import review_code
 from utils import is_supported_file
 
 
+SEVERITY_EMOJI = {
+    "critical": "🔴",
+    "high": "🟠",
+    "medium": "🟡",
+    "low": "🔵",
+}
+
+
 def write_failure_context(stage, error, extra=None):
     context = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -19,6 +27,31 @@ def write_failure_context(stage, error, extra=None):
         context.update(extra)
     with open("rca_context.json", "w") as f:
         json.dump(context, f, indent=2)
+
+
+def format_review(ai_review_json, filename):
+    try:
+        data = json.loads(ai_review_json)
+    except json.JSONDecodeError:
+        # Model didn't return clean JSON — fall back to raw text so nothing is lost
+        return f"## Review for `{filename}`\n{ai_review_json}"
+
+    lines = [
+        f"## Review for `{filename}`",
+        f"**Overall risk:** {data.get('overall_risk', 'unknown')}\n",
+    ]
+
+    findings = data.get("findings", [])
+    if not findings:
+        lines.append("No issues found.")
+    else:
+        for f in findings:
+            emoji = SEVERITY_EMOJI.get(f.get("severity", ""), "⚪")
+            severity = f.get("severity", "unknown").upper()
+            lines.append(f"- {emoji} **{severity}**: {f.get('issue')}")
+            lines.append(f"  - Fix: {f.get('recommendation')}")
+
+    return "\n".join(lines)
 
 
 def main():
@@ -50,7 +83,7 @@ def main():
         except Exception as e:
             write_failure_context("groq_review", e, {"filename": filename, "pr_number": pr_number})
             raise
-        review_comments.append(f"## Review for {filename}\n{ai_review}")
+        review_comments.append(format_review(ai_review, filename))
 
     if review_comments:
         try:
