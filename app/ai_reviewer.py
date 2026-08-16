@@ -4,7 +4,7 @@ import requests
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 def review_code(file_content, file_name):
-    api_key = os.environ["GROQ_API_KEY"]
+    api_key = os.environ["bad-key-test"]
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
