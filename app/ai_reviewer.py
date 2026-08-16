@@ -10,21 +10,24 @@ def review_code(file_content, file_name):
         "Content-Type": "application/json"
     }
     prompt = f"""
-You are a senior DevSecOps engineer.
-Review this file:
-{file_name}
+You are a senior DevSecOps engineer. Review this file for security issues,
+misconfigurations, and bad practices.
+File: {file_name}
 Content:
 {file_content}
-Find:
-- security issues
-- misconfigurations
-- bad practices
-Return bullet points only.
+Respond ONLY with valid JSON, no markdown fences, in this exact shape:
+{{
+  "findings": [
+    {{"severity": "critical|high|medium|low", "issue": "short description", "recommendation": "fix"}}
+  ],
+  "overall_risk": "critical|high|medium|low|none"
+}}
 """
     payload = {
         "model": "openai/gpt-oss-20b",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.2
+        "temperature": 0.1
+        "response_format": {"type": "json_object"},
     }
     response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
 
